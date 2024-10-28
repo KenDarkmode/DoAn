@@ -1,0 +1,114 @@
+﻿@model WebCV.Models.Category
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    form {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1, h4 {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #26BC89;
+    }
+
+    label {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    input[type="text"],
+    input[type="submit"] {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0 20px 0;
+        border: 1px solid #26BC89;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 16px;
+    }
+
+    /* Submit button */
+    input[type="submit"] {
+        background-color: #26BC89;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        input[type="submit"]:hover {
+            background-color: #26BC89;
+        }
+
+    /* Error message styling */
+    .text-danger {
+        color: #26BC89;
+        font-size: 14px;
+    }
+
+    /* Link back to index */
+    a.asp-action {
+        display: inline-block;
+        margin-top: 20px;
+        text-decoration: none;
+        color: #26BC89;
+        font-weight: bold;
+        transition: color 0.3s ease;
+    }
+
+        a.asp-action:hover {
+            color: #26BC89;
+        }
+</style>
+<h1>Thêm thể loại công việc</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" id="category-form">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="CategoryName" class="control-label"></label>
+                <input asp-for="CategoryName" name="categoryName" class="form-control" />
+                <span asp-validation-for="CategoryName" id="catename-error" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Thêm" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Trở về</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        document.getElementById('category-form').onsubmit = (e) => {
+            e.preventDefault();
+            let check = true;
+            var form = document.getElementById('category-form');
+            var formObject = new FormData(form);
+            let categoryName = formObject.get("categoryName");
+
+            if (categoryName.length === 0) {
+                document.getElementById('catename-error').innerHTML = "CategoryName không được để trôngs!";
+                check = false;
+            } else {
+                document.getElementById('catename-error').innerHTML = "";
+            }
+            if (check) {
+                form.submit();
+            }
+        }
+    </script>
+}
+
+

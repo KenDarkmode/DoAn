@@ -1,0 +1,158 @@
+﻿@model WebCV.Models.User
+@using Microsoft.AspNetCore.Identity
+@using WebCV.Models
+
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+@{
+    ViewData["Title"] = "UserProfile";
+    var CurrentUser = UserManager.GetUserAsync(User).Result;
+}
+
+<section style="background-color: #26BC89;">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        @{
+                            if (string.IsNullOrEmpty(CurrentUser.Avatar))
+                            {
+                                        <img src="~/images/avatars/defaultavatar.png"
+                                             alt="Avatar" class="rounded-circle img-fluid" style="width: 200px;height: 200px;" />
+                            }
+                            else
+                            {
+                                        <img src="~/images/avatars/@CurrentUser.Avatar"
+                                             alt="Avatar" class="rounded-circle img-fluid" style="width: 200px;height: 200px;" />
+                            }
+                        }
+                        <h5 class="my-3">@CurrentUser.FullName</h5>
+                        <p class="text-muted mb-1">@CurrentUser.Country</p>
+                        <p class="text-muted mb-4">@CurrentUser.Address</p>
+                        <div class="d-flex justify-content-center mb-2">
+                            <a asp-controller="User" asp-action="EditProfile" class="btn btn-primary btn-edit-profile">Thay đổi thông tin</a>
+                            <button type="button" class="btn btn-info btn-lg btn-change-avatar" data-bs-toggle="modal" data-bs-target="#myModal">Đổi ảnh đại diện</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0"><i class="fa fa-user" aria-hidden="true"></i>&emsp;Họ và tên</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">@CurrentUser.FullName</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0"><i class="fa fa-envelope" aria-hidden="true"></i>&emsp;Email</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">@CurrentUser.Email</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0"><i class="fa fa-phone" aria-hidden="true"></i>&emsp;Sđt</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">@CurrentUser.PhoneNumber</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0"><i class="fa fa-venus-mars" aria-hidden="true"></i>&emsp;Giới tính</p>
+                            </div>
+                            @{
+                                if (CurrentUser.Gender == null)
+                                {
+                                            <div class="col-sm-9">
+                                                <p class="text-muted mb-0">Chưa xác định</p>
+                                            </div>
+                                }
+                                else if (CurrentUser.Gender == 0)
+                                {
+                                            <div class="col-sm-9">
+                                                <p class="text-muted mb-0">Nam</p>
+                                            </div>
+                                }
+                                else
+                                {
+                                            <div class="col-sm-9">
+                                                <p class="text-muted mb-0">Nữ</p>
+                                            </div>
+                                }
+                            }
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0"><i class="fa fa-map-marker" aria-hidden="true"></i>&emsp;Địa chỉ</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">@CurrentUser.Address</p>
+                            </div>
+                        </div>
+                    </div>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Trở về</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Change Your Avatar</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="avatarForm" asp-action="ChangeAvatar" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="avatarInput" class="form-label">Avatar</label>
+                        <input type="file" name="avatar" class="form-control" id="avatarInput" aria-describedby="fileHelp">
+                    </div>
+                    <div id="error-message" class="text-danger"></div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#avatarForm').on('submit', function (e) {
+            var fileInput = $('#avatarInput');
+            var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+            var filePath = fileInput.val();
+            if (filePath === '') {
+                e.preventDefault();
+                $('#error-message').text('Vui lòng chọn một tệp ảnh.');
+            } else if (!allowedExtensions.exec(filePath)) {
+                e.preventDefault();
+                $('#error-message').text('Vui lòng chọn một tệp ảnh có file .jpg, .jepg, .png');
+            }else {
+                $('#error-message').text('');
+            }
+        });
+    });
+</script>

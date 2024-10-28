@@ -1,0 +1,76 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using WebCV.Models
+@using System.Security.Claims
+
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+@{
+    var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
+}
+
+@if (SignInManager.IsSignedIn(User))
+{
+
+
+    <form id="logout-form" class="form-inline" style="display: none" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
+        <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+    </form>
+    {
+    <div class="nav-item dropdown">
+        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                @if (string.IsNullOrEmpty(UserManager.GetUserAsync(User).Result.Avatar))
+                {
+                    <img src="~/images/avatars/default.png"
+                         alt="Avatar" style="width: 30px; border-radius: 100%; height: 30px;" />
+                }
+                else
+                {
+                    <img src="~/images/avatars/@UserManager.GetUserAsync(User).Result.Avatar"
+                         alt="Avatar" style="width: 30px; border-radius: 100%; height: 30px;" />
+                }
+        </a>
+            <div class="dropdown-menu rounded-0 m-0">
+                <a asp-area="" asp-controller="User" asp-action="UserProfile" class="dropdown-item">Thông tin cá nhân</a>
+                @if (claimsIdentity.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Role).Value == "User"){
+                    <a asp-area="" asp-controller="CV" asp-action="Saved" class="dropdown-item">Hồ sơ của bạn</a>
+                }
+                
+                <a class="dropdown-item" asp-controller="User" asp-action="ChangePassword"> Thay đổi mật khẩu</a>
+                <a href="#" id="logout-btn"  class="dropdown-item">Đăng xuất</a>
+                
+                
+            </div>
+    </div>
+    }
+}
+else
+{
+    <a href="~/Identity/Account/Register" class="nav-item nav-link">Đăng nhập/Đăng ký</a>
+}
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+
+    document.getElementById("logout-btn").onclick = (e) => {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Do you want to logout?',
+            showDenyButton: true,
+            confirmButtonText: 'Yes',
+            denyButtonText: 'No',
+            customClass: {
+                actions: 'my-actions',
+                cancelButton: 'order-1 right-gap',
+                confirmButton: 'order-2',
+                denyButton: 'order-3',
+            },
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById("logout-form").submit();
+            } else if (result.isDenied) {
+            }
+        })
+    }
+
+</script>

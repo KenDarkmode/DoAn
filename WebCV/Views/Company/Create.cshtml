@@ -1,0 +1,262 @@
+﻿@model WebCV.Models.Company
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+@{
+    var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
+}
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (ViewBag.Error != null)
+{
+    <script type="text/javascript">
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "@ViewBag.Error",
+        });
+    </script>
+}
+<style>
+    /* Add to your site's CSS file */
+    .container {
+        max-width: 800px;
+        margin: auto;
+    }
+
+    .card {
+        border: none;
+        border-radius: 10px;
+        padding: 20px;
+    }
+
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+    .form-group label {
+        font-weight: bold;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        border-radius: 5px;
+        padding: 10px;
+        border: 1px solid #ced4da;
+    }
+
+    .form-group .form-control-file {
+        padding: 5px;
+    }
+
+    .form-control-file + img {
+        margin-top: 10px;
+        display: block;
+    }
+
+    .btn-primary {
+        background-color: #26BC89;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        font-size: 1rem;
+    }
+
+        .btn-primary:hover {
+            background-color: #26BC89;
+        }
+
+    .btn-link {
+        color: #26BC89;
+    }
+
+        .btn-link:hover {
+            color: #26BC89;
+            text-decoration: none;
+        }
+
+    .text-center {
+        text-align: center;
+    }
+
+</style>
+<script src="~/ckeditor/ckeditor.js"></script>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg p-4">
+                <h2 class="text-center mb-4">Bạn là một công ty?</h2>
+                <form asp-action="Create" id="company-form" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="CopmpanyName" class="control-label"></label>
+                        <input asp-for="CopmpanyName" name="CopmpanyName" class="form-control" />
+                        <span asp-validation-for="CopmpanyName" id="CopmpanyName-error" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Address" class="control-label"></label>
+                        <input asp-for="Address" name="Address" class="form-control" />
+                        <span asp-validation-for="Address" id="address-error" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Image" class="control-label">Ảnh công ty</label>
+                        <input asp-for="Image" name="Image" accept="image/*" class="form-control-file" type="file" id="imgInp" />
+                        <img id="preview" src="#" alt="your image" width="200px" class="mt-2 d-none" />
+                        <span asp-validation-for="Image" id="image-error" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Country" class="control-label"></label>
+                        <input asp-for="Country" name="Country" class="form-control" />
+                        <span asp-validation-for="Country" id="country-error" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Website" class="control-label"></label>
+                        <input asp-for="Website" name="Website" class="form-control" />
+                        <span asp-validation-for="Website" id="website-error" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Hotline" class="control-label"></label>
+                        <input asp-for="Hotline" name="Hotline" class="form-control" />
+                        <span asp-validation-for="Hotline" id="hotline-error" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Information" class="control-label"></label>
+                        <textarea asp-for="Information" name="Information" id="editor" class="form-control"></textarea>
+                        <span asp-validation-for="Information" id="information-error" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Link" class="control-label"></label>
+                        <input asp-for="Link" name="Link" class="form-control" />
+                        <span asp-validation-for="Link" id="link-error" class="text-danger"></span>
+                    </div>
+
+                    <input asp-for="UserId" type="hidden" value="@UserManager.GetUserAsync(User).Result.Id" />
+
+                    <div class="form-group mb-3">
+                        <button type="submit" class="btn btn-primary btn-block">Đăng kí ngay</button>
+                    </div>
+                </form>
+
+                <div class="text-center">
+                    <a asp-action="Index" asp-controller="Home" asp-area="" class="btn btn-link">Trở lại</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js"></script>
+
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#editor'), {
+            })
+            .then(editor => {
+                window.editor = editor;
+                editor.ui.view.editable.element.style.height = '300px';
+            })
+            .catch(err => {
+                console.error(err.stack);
+            });
+
+        imgInp.onchange = evt => {
+            const [file] = imgInp.files;
+            if (file) {
+                preview.src = URL.createObjectURL(file);
+                document.getElementById('preview').classList.remove('d-none');
+            }
+        };
+
+        document.getElementById('company-form').onsubmit = (e) => {
+            e.preventDefault();
+            let check = true;
+            var form = document.getElementById('company-form');
+            var formObject = new FormData(form);
+            let companyName = formObject.get("CopmpanyName");
+            let address = formObject.get("Address");
+            let image = formObject.get("Image");
+            let country = formObject.get("Country");
+            let website = formObject.get("Website");
+            let hotline = formObject.get("Hotline");
+            let link = formObject.get("Link");
+            var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+
+
+            if (companyName.length === 0) {
+                document.getElementById('CopmpanyName-error').innerHTML = "CompanyName is required!";
+                check = false;
+            } else {
+                document.getElementById('CopmpanyName-error').innerHTML = "";
+            }
+            if (address.length === 0) {
+                document.getElementById('address-error').innerHTML = "Address is required!";
+                check = false;
+            } else {
+                document.getElementById('address-error').innerHTML = "";
+            }
+            if (!image) {
+                document.getElementById('image-error').innerHTML = "Image is required";
+                check = false;
+            } else if (!allowedExtensions.exec(image.name)) {
+                document.getElementById('image-error').innerHTML = "Invalid file type. Only .jpg, .jpeg, and .png are allowed.";
+                check = false;
+            } else {
+                document.getElementById('image-error').innerHTML = "";
+            }
+            if (country.length === 0) {
+                document.getElementById('country-error').innerHTML = "Country is required!";
+                check = false;
+            } else {
+                document.getElementById('country-error').innerHTML = "";
+            }
+            if (website.length === 0) {
+                document.getElementById('website-error').innerHTML = "Website is required!";
+                check = false;
+            } else {
+                document.getElementById('website-error').innerHTML = "";
+            }
+
+            if (hotline.length === 0) {
+                document.getElementById('hotline-error').innerHTML = "Hotline is required!";
+                check = false;
+            } else {
+                document.getElementById('hotline-error').innerHTML = "";
+            }
+
+            var english = /^[A-Za-z0-9-]*$/;
+            if (link.length === 0) {
+                document.getElementById('link-error').innerHTML = "Link is required";
+                check = false;
+            } else if (!english.test(link)) {
+                document.getElementById('link-error').innerHTML = "Link must be alphanumeric";
+                check = false;
+            } else {
+                document.getElementById('link-error').innerHTML = "";
+            }
+
+            if (check) {
+                form.submit();
+            }
+        }
+    </script>
+}

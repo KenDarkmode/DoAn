@@ -1,0 +1,30 @@
+﻿@model IEnumerable<WebCV.Models.Slider>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Slide</h1>
+<div class="container">
+    <div class="row">
+        <p>
+            <a class="btn btn-primary" asp-action="Create">Thêm mới</a>
+        </p>
+        @{
+            foreach (var item in Model)
+            {
+                <div class="col-sm">
+                    <div class="card" style="width: 18rem;">
+                        <img src="~/images/slides/@item.Image" class="card-img-top" alt="@item.Title">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Title</h5>
+                            <a asp-action="Edit" asp-route-id="@item.SlideID" class="btn btn-primary">Sửa</a>
+                            <a asp-action="Delete" asp-route-id="@item.SlideID" data-id="@item.SlideID" class="btn btn-danger delete-btn">Xóa</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
